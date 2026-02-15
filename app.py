@@ -31,7 +31,7 @@ from sklearn.metrics import (
 # ============================================================
 st.set_page_config(
     page_title="ML Assignment 2 - Classification Models",
-    page_icon="ðŸ“Š",
+    page_icon="chart_with_upwards_trend",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -135,7 +135,7 @@ def preprocess_uploaded_data(df, scaler, feature_names, le_month, le_visitor):
     # Validate columns
     missing_cols = [col for col in feature_names if col not in df.columns]
     if missing_cols:
-        st.error(f"Missing required columns in uploaded data: {missing_cols}")
+        st.error("Missing required columns in uploaded data: " + str(missing_cols))
         return None, None
 
     # Select and scale features
@@ -192,7 +192,7 @@ def plot_metrics_comparison(metrics_list):
         for bar in bars:
             height = bar.get_height()
             if height > 0.05:
-                ax.annotate(f'{height:.2f}',
+                ax.annotate('{:.2f}'.format(height),
                             xy=(bar.get_x() + bar.get_width() / 2, height),
                             xytext=(0, 3), textcoords="offset points",
                             ha='center', va='bottom', fontsize=6, rotation=90)
@@ -213,25 +213,25 @@ def plot_metrics_comparison(metrics_list):
 # MAIN APPLICATION
 # ============================================================
 def main():
-    # â”€â”€ Header â”€â”€
-    st.title("ðŸ“Š ML Classification Models Dashboard")
+    # -- Header --
+    st.title("ML Classification Models Dashboard")
     st.markdown("""
     **Course:** M.Tech (AIML/DSE) - Machine Learning | **Assignment 2**
 
     **Dataset:** [Online Shoppers Purchasing Intention](https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention+Dataset) (UCI ML Repository)
 
-    **Task:** Binary Classification â€” Predict whether an online shopping session results in a purchase (Revenue)
+    **Task:** Binary Classification -- Predict whether an online shopping session results in a purchase (Revenue)
 
     **Models Implemented:** Logistic Regression, Decision Tree, kNN, Naive Bayes, Random Forest, XGBoost
     """)
     st.markdown("---")
 
-    # â”€â”€ Sidebar â”€â”€
-    st.sidebar.header("âš™ï¸ Settings")
+    # -- Sidebar --
+    st.sidebar.header("Settings")
 
     # Model selection dropdown [1 mark]
     selected_model = st.sidebar.selectbox(
-        "ðŸ”½ Select ML Model",
+        "Select ML Model",
         list(MODEL_FILES.keys()),
         index=0,
         help="Choose a classification model to view its detailed evaluation"
@@ -240,7 +240,7 @@ def main():
     st.sidebar.markdown("---")
 
     # Dataset upload option (CSV) [1 mark]
-    st.sidebar.header("ðŸ“ Upload Test Data (CSV)")
+    st.sidebar.header("Upload Test Data (CSV)")
     uploaded_file = st.sidebar.file_uploader(
         "Upload CSV file",
         type=['csv'],
@@ -249,21 +249,21 @@ def main():
     )
 
     if uploaded_file:
-        st.sidebar.success(f"âœ… File uploaded: {uploaded_file.name}")
+        st.sidebar.success("File uploaded: " + uploaded_file.name)
 
     # Download sample test data
     test_data = load_test_data()
     if test_data is not None:
         st.sidebar.markdown("---")
         st.sidebar.download_button(
-            label="ðŸ“¥ Download Sample Test CSV",
+            label="Download Sample Test CSV",
             data=test_data.to_csv(index=False).encode('utf-8'),
             file_name="sample_test_data.csv",
             mime="text/csv",
             help="Download a sample test file you can use for upload"
         )
 
-    # â”€â”€ Load resources â”€â”€
+    # -- Load resources --
     try:
         scaler, feature_names, le_month, le_visitor = load_preprocessing()
         models = load_all_models()
@@ -271,26 +271,26 @@ def main():
         precomputed_cm = load_precomputed_cm()
         precomputed_reports = load_precomputed_reports()
     except Exception as e:
-        st.error(f"âŒ Error loading models: {e}")
-        st.info("Please run `python model/train_models.py` first to train and save models.")
+        st.error("Error loading models: " + str(e))
+        st.info("Please run 'python model/train_models.py' first to train and save models.")
         return
 
-    # â”€â”€ Tabs â”€â”€
+    # -- Tabs --
     tab1, tab2, tab3 = st.tabs([
-        "ðŸ“ˆ All Models Comparison",
-        "ðŸ” Individual Model Analysis",
-        "ðŸ“‹ Dataset Information"
+        "All Models Comparison",
+        "Individual Model Analysis",
+        "Dataset Information"
     ])
 
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     # TAB 1: MODEL COMPARISON
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     with tab1:
-        st.header("Model Comparison â€” All 6 Classifiers")
+        st.header("Model Comparison -- All 6 Classifiers")
 
         if precomputed_metrics:
             # Metrics comparison table [1 mark - display of evaluation metrics]
-            st.subheader("ðŸ“Š Evaluation Metrics Table")
+            st.subheader("Evaluation Metrics Table")
             metrics_df = pd.DataFrame(precomputed_metrics)
             cols_order = ['Model', 'Accuracy', 'AUC', 'Precision', 'Recall', 'F1', 'MCC']
             metrics_df = metrics_df[cols_order]
@@ -313,21 +313,21 @@ def main():
             best_idx = metrics_df['F1'].idxmax()
             best_model = metrics_df.loc[best_idx, 'Model']
             best_f1 = metrics_df.loc[best_idx, 'F1']
-            st.success(f"ðŸ† **Best Model (by F1 Score):** {best_model} with F1 = {best_f1:.4f}")
+            st.success("Best Model (by F1 Score): " + best_model + " with F1 = {:.4f}".format(best_f1))
 
             # Visual comparison chart
-            st.subheader("ðŸ“‰ Visual Comparison")
+            st.subheader("Visual Comparison")
             fig = plot_metrics_comparison(precomputed_metrics)
             st.pyplot(fig)
             plt.close()
         else:
             st.warning("Pre-computed metrics not found. Run training script first.")
 
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     # TAB 2: INDIVIDUAL MODEL ANALYSIS
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     with tab2:
-        st.header(f"Detailed Analysis: {selected_model}")
+        st.header("Detailed Analysis: " + selected_model)
 
         # Determine evaluation data source
         X_eval, y_eval = None, None
@@ -340,42 +340,42 @@ def main():
                     uploaded_df, scaler, feature_names, le_month, le_visitor
                 )
                 data_source = "uploaded"
-                st.info(f"ðŸ“ Using uploaded data: {uploaded_df.shape[0]} rows, "
-                        f"{uploaded_df.shape[1]} columns")
+                st.info("Using uploaded data: {} rows, {} columns".format(
+                    uploaded_df.shape[0], uploaded_df.shape[1]))
             except Exception as e:
-                st.error(f"Error processing uploaded file: {e}")
+                st.error("Error processing uploaded file: " + str(e))
 
         # If no upload or upload failed, use precomputed/saved test data
         if X_eval is None and precomputed_metrics:
             data_source = "precomputed"
 
         if data_source == "precomputed":
-            # â”€â”€ Show pre-computed results â”€â”€
+            # -- Show pre-computed results --
             model_metrics = next(
                 (m for m in precomputed_metrics if m['Model'] == selected_model), None
             )
 
             if model_metrics:
                 # Display evaluation metrics [1 mark]
-                st.subheader("ðŸ“Š Evaluation Metrics")
+                st.subheader("Evaluation Metrics")
                 col1, col2, col3 = st.columns(3)
-                col1.metric("Accuracy", f"{model_metrics['Accuracy']:.4f}")
-                col2.metric("AUC Score", f"{model_metrics['AUC']:.4f}")
-                col3.metric("Precision", f"{model_metrics['Precision']:.4f}")
+                col1.metric("Accuracy", "{:.4f}".format(model_metrics['Accuracy']))
+                col2.metric("AUC Score", "{:.4f}".format(model_metrics['AUC']))
+                col3.metric("Precision", "{:.4f}".format(model_metrics['Precision']))
 
                 col4, col5, col6 = st.columns(3)
-                col4.metric("Recall", f"{model_metrics['Recall']:.4f}")
-                col5.metric("F1 Score", f"{model_metrics['F1']:.4f}")
-                col6.metric("MCC Score", f"{model_metrics['MCC']:.4f}")
+                col4.metric("Recall", "{:.4f}".format(model_metrics['Recall']))
+                col5.metric("F1 Score", "{:.4f}".format(model_metrics['F1']))
+                col6.metric("MCC Score", "{:.4f}".format(model_metrics['MCC']))
 
                 # Confusion matrix [1 mark]
                 if precomputed_cm and selected_model in precomputed_cm:
-                    st.subheader("ðŸ”¢ Confusion Matrix")
+                    st.subheader("Confusion Matrix")
                     cm = np.array(precomputed_cm[selected_model])
                     col_a, col_b = st.columns([1, 1])
                     with col_a:
                         fig = plot_confusion_matrix(
-                            cm, f"Confusion Matrix â€” {selected_model}"
+                            cm, "Confusion Matrix -- " + selected_model
                         )
                         st.pyplot(fig)
                         plt.close()
@@ -390,7 +390,7 @@ def main():
 
                 # Classification report [1 mark]
                 if precomputed_reports and selected_model in precomputed_reports:
-                    st.subheader("ðŸ“‹ Classification Report")
+                    st.subheader("Classification Report")
                     report = precomputed_reports[selected_model]
                     report_df = pd.DataFrame(report).transpose()
                     st.dataframe(
@@ -399,7 +399,7 @@ def main():
                     )
 
         elif X_eval is not None and y_eval is not None:
-            # â”€â”€ Compute fresh results from uploaded data â”€â”€
+            # -- Compute fresh results from uploaded data --
             model = models.get(selected_model)
             if model:
                 y_pred = model.predict(X_eval)
@@ -413,23 +413,23 @@ def main():
                 report = classification_report(y_eval, y_pred, output_dict=True)
 
                 # Metrics display [1 mark]
-                st.subheader("ðŸ“Š Evaluation Metrics (Uploaded Data)")
+                st.subheader("Evaluation Metrics (Uploaded Data)")
                 col1, col2, col3 = st.columns(3)
-                col1.metric("Accuracy", f"{metrics['Accuracy']:.4f}")
-                col2.metric("AUC Score", f"{metrics['AUC']:.4f}")
-                col3.metric("Precision", f"{metrics['Precision']:.4f}")
+                col1.metric("Accuracy", "{:.4f}".format(metrics['Accuracy']))
+                col2.metric("AUC Score", "{:.4f}".format(metrics['AUC']))
+                col3.metric("Precision", "{:.4f}".format(metrics['Precision']))
 
                 col4, col5, col6 = st.columns(3)
-                col4.metric("Recall", f"{metrics['Recall']:.4f}")
-                col5.metric("F1 Score", f"{metrics['F1']:.4f}")
-                col6.metric("MCC Score", f"{metrics['MCC']:.4f}")
+                col4.metric("Recall", "{:.4f}".format(metrics['Recall']))
+                col5.metric("F1 Score", "{:.4f}".format(metrics['F1']))
+                col6.metric("MCC Score", "{:.4f}".format(metrics['MCC']))
 
                 # Confusion matrix [1 mark]
-                st.subheader("ðŸ”¢ Confusion Matrix")
+                st.subheader("Confusion Matrix")
                 col_a, col_b = st.columns([1, 1])
                 with col_a:
                     fig = plot_confusion_matrix(
-                        cm, f"Confusion Matrix â€” {selected_model}"
+                        cm, "Confusion Matrix -- " + selected_model
                     )
                     st.pyplot(fig)
                     plt.close()
@@ -442,7 +442,7 @@ def main():
                     st.dataframe(cm_df, width='stretch')
 
                 # Classification report [1 mark]
-                st.subheader("ðŸ“‹ Classification Report")
+                st.subheader("Classification Report")
                 report_df = pd.DataFrame(report).transpose()
                 st.dataframe(
                     report_df.style.format("{:.4f}"),
@@ -450,7 +450,7 @@ def main():
                 )
 
                 # Predictions preview
-                st.subheader("ðŸ”® Predictions Preview (first 20 rows)")
+                st.subheader("Predictions Preview (first 20 rows)")
                 pred_df = pd.DataFrame({
                     'Actual': y_eval[:20],
                     'Predicted': y_pred[:20],
@@ -459,7 +459,7 @@ def main():
                 st.dataframe(pred_df, width='stretch')
 
         elif X_eval is not None and y_eval is None:
-            # â”€â”€ No target column - predictions only â”€â”€
+            # -- No target column - predictions only --
             model = models.get(selected_model)
             if model:
                 y_pred = model.predict(X_eval)
@@ -468,10 +468,10 @@ def main():
                 else:
                     y_proba = y_pred.astype(float)
 
-                st.info("â„¹ï¸ No 'Revenue' column found in uploaded data. "
+                st.info("No 'Revenue' column found in uploaded data. "
                         "Showing predictions only (no evaluation metrics).")
 
-                st.subheader("ðŸ”® Predictions")
+                st.subheader("Predictions")
                 col1, col2 = st.columns(2)
                 col1.metric("Predicted: No Purchase", int((y_pred == 0).sum()))
                 col2.metric("Predicted: Purchase", int((y_pred == 1).sum()))
@@ -485,9 +485,9 @@ def main():
             st.info("Upload a CSV file to see model evaluation on custom data, "
                     "or pre-computed results will be displayed automatically.")
 
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     # TAB 3: DATASET INFORMATION
-    # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    # ==============================================================
     with tab3:
         st.header("Dataset Information")
 
@@ -498,7 +498,7 @@ def main():
 
         **Citation:** Sakar, C.O., Polat, S.O., Katircioglu, M. et al. *Real-time prediction
         of online shoppers' purchasing intention using multilayer perceptron and LSTM
-        recurrent neural networks.* Neural Comput & Applic 31, 6893â€“6908 (2019).
+        recurrent neural networks.* Neural Comput & Applic 31, 6893-6908 (2019).
 
         ---
 
@@ -553,12 +553,12 @@ def main():
         if test_data is not None:
             st.subheader("Sample Data (Test Set Preview)")
             st.dataframe(test_data.head(15), width='stretch')
-            st.caption(f"Showing first 15 rows of {test_data.shape[0]} test samples")
+            st.caption("Showing first 15 rows of {} test samples".format(test_data.shape[0]))
 
-    # â”€â”€ Footer â”€â”€
+    # -- Footer --
     st.markdown("---")
     st.markdown(
-        "**ML Assignment 2** | M.Tech (AIML/DSE) â€” Machine Learning | "
+        "**ML Assignment 2** | M.Tech (AIML/DSE) -- Machine Learning | "
         "Online Shoppers Purchasing Intention Dataset | "
         "Built with Streamlit"
     )
